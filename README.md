@@ -29,7 +29,7 @@ oci setup config
 4. Add the generated public key to your profile. Web console->My Profile->API Keys->Add API key
 
 ## :keyboard: Create the k8s-cluster (OKE)
-This part is managed by [infra](infra/)
+This part is managed by [infra](terraform/infra/)
 
 Create a `terraform.tfvars` in the `infra` folder
 ```
@@ -65,7 +65,7 @@ kubectl --kubeconfig ~/.kube/configs/oci.kubeconfig get nodes
 - [x] Certmanager with letsencrypt
 - [x] Longhorn (Storage)
 
-The tools are managed by terraform in [config](config/)
+The tools are managed by terraform in [config](terraform/config/)
 
 Create a `terraform.tfvars` in the `infra` folder
 ```
@@ -75,12 +75,39 @@ letsencrypt_email = "myemail"
 ```
 Than put `terraform` again to work
 ```
-cd infra
+cd config
 terraform init
 terraform apply
 ```
 
-## 
+### Test your ingress
+The [whoami-ingress](terraform/examples/whoami-ingress) folder contains a test-deployment for your new k8s cluster (terraform + helm). Replace `example.com` bellow with your domain.
+
+1.  Get the external IP of the LB
+```
+kubectl get services -n ingress-nginx \
+ingress-nginx-controller \
+--output jsonpath='{.status.loadBalancer.ingress[0].ip}'
+```
+2. Create DNS record type A in your `example.com` DNS zone like this:
+`*.oci.example.com` with value == the external IP from previous step and check until your record is being published. Something like this should be helpful.
+```
+dig foobar.oci.example.com
+```
+3. Create a `terraform.tfvars` in the folder
+```
+host = "whoami.oci.example.com"
+```
+4. Than put `terraform` again to work
+```
+cd examples/whoami-ingress
+terraform init
+terraform apply
+```
+5. At the end you should be able to reach your new deployment via browser or in terminal (`curl` => no cache issues):
+
+`curl https://whoami.oci.example.com`
+
 
 # Optimisations & Ideas
 
