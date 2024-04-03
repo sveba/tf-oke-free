@@ -18,7 +18,7 @@ variable "ssh_public_key" {
 variable "kubernetes_version" {
   description = "Version of Kubernetes"
   type        = string
-  default     = "v1.28.2"
+  default     = "v1.29.1"
 }
 
 variable "kubernetes_worker_nodes" {
