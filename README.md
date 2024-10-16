@@ -17,7 +17,7 @@ and this repo (big thanks @Ulli)
 https://github.com/nce/oci-free-cloud-k8s
 
 ## Preconditions
-The setup is based on Terraform, so you need experiance with [Terraform](https://developer.hashicorp.com/terraform)
+The setup is based on Terraform, so you need experience with [Terraform](https://developer.hashicorp.com/terraform)
 
 ## Presteps
 1. Create account at OCI - https://www.oracle.com/cloud/
