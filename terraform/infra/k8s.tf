@@ -21,12 +21,17 @@ resource "oci_containerengine_cluster" "k8s_cluster" {
 }
 
 data "oci_containerengine_node_pool_option" "node_pool_options" {
-  node_pool_option_id = oci_containerengine_cluster.k8s_cluster.id
+  node_pool_option_id = "all"
   compartment_id      = var.compartment_id
 }
 
 data "oci_identity_availability_domains" "ads" {
   compartment_id = var.compartment_id
+}
+
+data "jq_query" "latest_image" {
+  data  = jsonencode({ sources = jsondecode(jsonencode(data.oci_containerengine_node_pool_option.node_pool_options.sources)) })
+  query = "[.sources[] | select(.source_name | test(\".*aarch.*OKE-${replace(var.kubernetes_version, "v", "")}.*\")?) .image_id][0]"
 }
 
 resource "oci_containerengine_node_pool" "k8s_node_pool" {
@@ -65,7 +70,7 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
     ocpus         = 2
   }
   node_source_details {
-    image_id    = data.oci_containerengine_node_pool_option.node_pool_options.sources[0].image_id
+    image_id    = jsondecode(data.jq_query.latest_image.result)
     source_type = "image"
 
     boot_volume_size_in_gbs = 100
@@ -74,6 +79,7 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
     key   = "name"
     value = "k8s-cluster"
   }
+
   ssh_public_key = var.ssh_public_key
 }
 

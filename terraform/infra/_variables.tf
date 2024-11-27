@@ -18,7 +18,7 @@ variable "ssh_public_key" {
 variable "kubernetes_version" {
   description = "Version of Kubernetes"
   type        = string
-  default     = "v1.29.1"
+  default     = "v1.31.1"
 }
 
 variable "kubernetes_worker_nodes" {
@@ -32,4 +32,9 @@ variable "oci_profile_name" {
   description = "Profile name in oci-config file (~/.oci/config)"
   type        = string
   default     = "DEFAULT"
+}
+
+variable "budget_alarm_email" {
+  description = "Email for budget cost alarms"
+  type        = string
 }
